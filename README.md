@@ -154,14 +154,14 @@ Generate structured functional test cases based on the Jira acceptance criteria:
 
 ## 🧠 Compétences démontrées
 
-✔ Développement Spring Boot avancé
-✔ Intégration API REST (Jira Cloud)
-✔ Consommation d’un modèle IA local (Ollama)
-✔ Génération de cas de test automatisée (QA Engineering)
-✔ Clean architecture & séparation des responsabilités
-✔ Gestion sécurisée des propriétés de configuration
-✔ Construction d’un pipeline Dev/Test intelligent
-✔ Automatisation d’un flux métier réel
+- ✔ Développement Spring Boot avancé
+- ✔ Intégration API REST (Jira Cloud)
+- ✔ Consommation d’un modèle IA local (Ollama)
+- ✔ Génération de cas de test automatisée (QA Engineering)
+- ✔ Clean architecture & séparation des responsabilités
+- ✔ Gestion sécurisée des propriétés de configuration
+- ✔ Construction d’un pipeline Dev/Test intelligent
+- ✔ Automatisation d’un flux métier réel
 
 
 ## 🚀 Améliorations possibles
