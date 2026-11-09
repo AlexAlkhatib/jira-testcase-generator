@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jira Test Case Generator — Cas de test générés par IA</title>
+  <meta name="description" content="Transformez vos user stories Jira en cas de test fonctionnels structurés, grâce à un modèle IA local (Ollama).">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Jira Test Case Generator, accueil">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img"><path d="M16 2 4 9v14l12 7 12-7V9L16 2Zm0 4.6 8.7 5.1v10.6L16 27.4 7.3 22.3V11.7L16 6.6Z" fill="currentColor"/><path d="M16 10.5 10 14v7l6 3.5 6-3.5v-7l-6-3.5Zm0 4.6 2.6 1.5v2.8L16 21l-2.6-1.6v-2.8L16 15.1Z" fill="currentColor" opacity=".65"/></svg>
+      </span>
+      <span class="brand-text">
+        <strong>Jira Test Case Generator</strong>
+        <small>AI-assisted QA · v<span id="app-version">2.0.0</span></small>
+      </span>
+    </a>
+    <div class="status-chips">
+      <span class="chip" id="status-jira" title="État de la configuration Jira">
+        <span class="dot" aria-hidden="true"></span><span class="chip-label">Jira…</span>
+      </span>
+      <span class="chip" id="status-model" title="Modèle Ollama utilisé">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 2a2 2 0 0 1 2 2v1.2A6 6 0 0 1 18 11v4a6 6 0 1 1-12 0v-4a6 6 0 0 1 4-5.8V4a2 2 0 0 1 2-2Zm-2.5 8a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm5 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM9 16v1.5h6V16H9Z" fill="currentColor"/></svg>
+        <span class="chip-label">modèle…</span>
+      </span>
+      <a class="chip chip-link" href="/actuator/health" target="_blank" rel="noopener">Santé</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel" aria-labelledby="page-title">
+      <div class="eyebrow">QA Engineering · GenAI</div>
+      <h1 id="page-title">Vos critères d'acceptation<br><span class="gradient-text">deviennent des tests.</span></h1>
+      <p class="lede">
+        Indiquez la clé d'une story Jira. L'application lit la description et les critères
+        d'acceptation, puis un modèle <strong>Ollama local</strong> rédige des cas de test
+        fonctionnels, négatifs et limites — prêts à être exécutés.
+      </p>
+
+      <div id="config-banner" class="banner hidden" role="alert">
+        <strong>Jira n'est pas encore configuré.</strong>
+        <span>Renseignez <code>JIRA_BASE_URL</code>, <code>JIRA_EMAIL</code> et <code>JIRA_API_TOKEN</code>,
+        puis redémarrez l'application. Aucun secret n'est stocké dans le code.</span>
+      </div>
+
+      <form id="generator-form" novalidate>
+        <div class="field">
+          <label for="story-key">Clé de la story Jira</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 1.4l-1.4 1.4a1 1 0 0 1-1.4 0Z" fill="currentColor"/><path d="M7.8 16.2a4 4 0 0 1 0-5.7l2.8-2.8a4 4 0 0 1 5.7 5.7l-1.3 1.3-1.4-1.4 1.3-1.3a2 2 0 1 0-2.9-2.9l-2.8 2.8a2 2 0 0 0 0 2.9l-1.4 1.4Z" fill="currentColor"/><path d="M16.2 7.8a4 4 0 0 1 0 5.7l-2.8 2.8a4 4 0 0 1-5.7-5.7l1.3-1.3 1.4 1.4-1.3 1.3a2 2 0 1 0 2.9 2.9l2.8-2.8a2 2 0 0 0 0-2.9l1.4-1.4Z" fill="currentColor"/></svg>
+            <input id="story-key" name="storyKey" type="text" placeholder="KAN-3" autocomplete="off"
+                   spellcheck="false" required aria-describedby="story-key-hint">
+          </div>
+          <p class="hint" id="story-key-hint">Format <code>PROJET-123</code>. La story doit être accessible avec votre token.</p>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="language">Langue de sortie</label>
+            <select id="language" name="language">
+              <option value="FR" selected>Français</option>
+              <option value="EN">English</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="format">Style des étapes</label>
+            <select id="format" name="format">
+              <option value="STANDARD" selected>Standard (impératif)</option>
+              <option value="GHERKIN">Gherkin (Given/When/Then)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="max-cases">Nombre de cas de test</label>
+            <output id="max-cases-value" for="max-cases">8</output>
+          </div>
+          <input id="max-cases" name="maxCases" type="range" min="3" max="15" step="1" value="8">
+          <div class="range-scale" aria-hidden="true"><span>3</span><span>9</span><span>15</span></div>
+        </div>
+
+        <button id="submit-button" class="btn-primary" type="submit">
+          <span class="btn-label">Générer les cas de test</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h12.2l-4.6-4.6L14 6l6 6-6 6-1.4-1.4 4.6-4.6H5v-2Z" fill="currentColor"/></svg>
+        </button>
+        <p class="micro">Le modèle tourne en local : aucun contenu Jira n'est envoyé à un service tiers.</p>
+      </form>
+
+      <div id="history-block" class="history hidden">
+        <h2>Générations récentes</h2>
+        <div id="history" class="history-list"></div>
+      </div>
+
+      <div class="stack-line" aria-label="Stack technique">
+        <span>Spring Boot 3.5</span><span>Spring AI</span><span>Ollama</span><span>Jira REST</span>
+      </div>
+    </section>
+
+    <section class="results" aria-live="polite" aria-busy="false">
+      <div id="empty" class="empty-state">
+        <div class="empty-art" aria-hidden="true">
+          <span class="sheet sheet-back"></span>
+          <span class="sheet sheet-front">
+            <span class="line lg"></span><span class="line"></span><span class="line sm"></span>
+            <span class="check">✓</span>
+          </span>
+        </div>
+        <h2>Prêt à transformer une story en plan de test</h2>
+        <p>Les cas générés apparaîtront ici, avec leurs étapes, données de test et résultats attendus.</p>
+        <ul class="empty-list">
+          <li><span>01</span> Lecture de la story et des critères d'acceptation via l'API Jira</li>
+          <li><span>02</span> Génération structurée par un LLM local (JSON strict)</li>
+          <li><span>03</span> Export JSON, CSV ou Markdown pour votre outil de test</li>
+        </ul>
+      </div>
+
+      <div id="loading" class="loading hidden">
+        <div class="loader" aria-hidden="true"><span></span><span></span><span></span></div>
+        <h2>Génération en cours…</h2>
+        <p>Le modèle local analyse les critères d'acceptation. Cela prend généralement de 10 à 60 secondes.</p>
+        <div class="progress"><span id="elapsed-bar"></span></div>
+        <p class="mono" id="elapsed">0 s</p>
+      </div>
+
+      <div id="error" class="error-card hidden" role="alert">
+        <div class="error-head">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2 1 21h22L12 2Zm0 5.5 6.9 11.9H5.1L12 7.5ZM11 11v4h2v-4h-2Zm0 5v2h2v-2h-2Z" fill="currentColor"/></svg>
+          <span id="error-code">ERREUR</span>
+        </div>
+        <p id="error-message"></p>
+        <p class="error-hint" id="error-hint"></p>
+        <button type="button" class="btn-ghost" id="retry-button">Réessayer</button>
+      </div>
+
+      <div id="output" class="output hidden">
+        <article class="story-card">
+          <div class="story-main">
+            <div class="story-key-row">
+              <span class="story-key" id="story-key-badge">KAN-3</span>
+              <span class="badge" id="story-type">Story</span>
+              <span class="badge badge-status" id="story-status">To Do</span>
+            </div>
+            <h2 id="story-summary">Titre de la story</h2>
+            <p class="story-criteria" id="story-criteria"></p>
+          </div>
+          <a class="story-link" id="story-link" href="#" target="_blank" rel="noopener">
+            Ouvrir dans Jira
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3ZM5 5h6v2H7v10h10v-4h2v6H5V5Z" fill="currentColor"/></svg>
+          </a>
+        </article>
+
+        <div class="result-bar">
+          <div class="result-meta">
+            <strong id="case-count">0 cas de test</strong>
+            <span class="sep" aria-hidden="true">·</span>
+            <span id="generation-meta">modèle · 0 s</span>
+          </div>
+          <div class="export-group">
+            <span class="export-label">Exporter</span>
+            <button type="button" class="btn-chip" data-export="json">JSON</button>
+            <button type="button" class="btn-chip" data-export="csv">CSV</button>
+            <button type="button" class="btn-chip" data-export="md">Markdown</button>
+            <button type="button" class="btn-chip" id="copy-all">Copier tout</button>
+          </div>
+        </div>
+
+        <div id="warnings" class="warnings hidden"></div>
+        <div id="cases" class="case-list"></div>
+
+        <details class="criteria-panel">
+          <summary>Critères d'acceptation utilisés pour la génération</summary>
+          <pre id="acceptance-criteria"></pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Jira Test Case Generator · MIT License</span>
+    <span>API : <code>GET /api/v1/test-cases?storyKey=KAN-3</code></span>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <template id="case-template">
+    <article class="case-card">
+      <header class="case-head">
+        <div class="case-title-row">
+          <span class="case-id"></span>
+          <span class="case-type"></span>
+          <span class="case-priority"></span>
+        </div>
+        <h3 class="case-title"></h3>
+        <button type="button" class="icon-button copy-case" title="Copier ce cas de test" aria-label="Copier ce cas de test">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 7V4h12v12h-3v3H5V7h3Zm2 0h5v7h2V6H10v1Zm-3 2v8h8V9H7Z" fill="currentColor"/></svg>
+        </button>
+      </header>
+      <div class="case-body">
+        <div class="case-block preconditions hidden">
+          <h4>Préconditions</h4>
+          <ul></ul>
+        </div>
+        <div class="case-block">
+          <h4>Étapes</h4>
+          <ol class="steps"></ol>
+        </div>
+        <div class="case-block data-block hidden">
+          <h4>Données de test</h4>
+          <ul class="test-data"></ul>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <p></p>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="/js/app.js" defer></script>
+</body>
+</html>

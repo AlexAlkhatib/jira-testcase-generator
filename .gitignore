@@ -1,37 +1,36 @@
+# Secrets — never commit credentials
+.env
+.env.local
+.env.*.local
+*.pem
+*.p12
+
+# Build output
 HELP.md
-.gradle
+.gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
+out/
+bin/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
+# IDEs
+.idea/
 *.iws
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
 .vscode/
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# OS / logs
+.DS_Store
+Thumbs.db
+*.log
+logs/
+
+# Local documentation build artifacts (the final PDF/PPTX are shipped in docs/)
+docs/.build/

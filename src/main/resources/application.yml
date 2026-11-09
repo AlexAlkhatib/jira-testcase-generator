@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: jira-test-case-generator
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  ai:
+    model:
+      chat: ollama
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      init:
+        pull-model-strategy: never
+      chat:
+        options:
+          model: ${AI_MODEL:mistral}
+          temperature: ${AI_TEMPERATURE:0.2}
+          num-ctx: ${AI_NUM_CTX:8192}
+  http:
+    client:
+      connect-timeout: 5s
+      read-timeout: 3m
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 1h
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/css,application/javascript
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Jira Test Case Generator
+    version: 2.0.0
+
+app:
+  version: 2.0.0
+  jira:
+    # NEVER commit credentials. Provide them through environment variables or a local .env.
+    base-url: ${JIRA_BASE_URL:}
+    email: ${JIRA_EMAIL:}
+    api-token: ${JIRA_API_TOKEN:}
+    api-version: ${JIRA_API_VERSION:3}
+    acceptance-criteria-field: ${JIRA_ACCEPTANCE_CRITERIA_FIELD:}
+    timeout: ${JIRA_TIMEOUT:15s}
+  generation:
+    max-story-characters: ${GENERATION_MAX_STORY_CHARACTERS:8000}
+    max-test-cases: ${GENERATION_MAX_TEST_CASES:20}
+    default-test-cases: ${GENERATION_DEFAULT_TEST_CASES:8}
+
+logging:
+  level:
+    root: INFO
+    com.asecurityguru: INFO
+    org.springframework.ai: WARN
