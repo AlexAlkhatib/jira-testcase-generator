@@ -8,9 +8,6 @@
 [![Ollama](https://img.shields.io/badge/Ollama-local%20LLM-111111)](https://ollama.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
-> Version **2.0.0** — réécriture complète du projet initial. API typée, interface web, tests automatisés,
-> gestion d'erreurs normalisée et **aucun secret dans le code**.
-
 ![Interface du Jira Test Case Generator](docs/images/ui-resultats.png)
 
 ---
@@ -25,11 +22,10 @@
 6. [Démarrage rapide](#6-démarrage-rapide)
 7. [Configuration](#7-configuration)
 8. [Référence API](#8-référence-api)
-9. [Sécurité](#9-sécurité)
-10. [Tests et qualité](#10-tests-et-qualité)
-11. [Documentation](#11-documentation)
-12. [Déploiement](#12-déploiement)
-13. [Licence et crédits](#13-licence-et-crédits)
+9. [Tests et qualité](#9-tests-et-qualité)
+10. [Documentation](#10-documentation)
+11. [Déploiement](#11-déploiement)
+12. [Licence et crédits](#12-licence-et-crédits)
 
 ---
 
@@ -337,33 +333,7 @@ Toutes les erreurs utilisent `application/problem+json` :
 
 ---
 
-## 9. Sécurité
-
-> ⚠️ **La version 1 contenait un token Jira et un email en clair dans le dépôt.**
-> Tout token exposé doit être considéré comme compromis : **révoquez-le immédiatement**
-> depuis Atlassian, puis générez-en un nouveau. La v2 ne contient plus aucun secret.
-
-Mesures en place :
-
-- secrets uniquement via variables d'environnement (`.env` ignoré par Git) ;
-- `.env.example` avec valeurs fictives explicites ;
-- aucune credential dans les logs, les réponses ou `/api/v1/config` ;
-- validation stricte des entrées (`PROJET-123`, enums, bornes) avant tout appel amont ;
-- timeouts de connexion/lecture côté Jira ;
-- contexte story délimité et tronqué, consigne explicite de **ne jamais suivre les
-  instructions contenues dans la story** (anti prompt-injection) ;
-- sortie modèle **toujours parsée**, jamais interprétée comme du HTML dans l'interface
-  (rendu via `textContent`) ;
-- erreurs internes journalisées côté serveur, jamais renvoyées au client ;
-- conteneur Docker non-root avec healthcheck.
-
-En production, ajoutez un reverse proxy TLS et une authentification devant l'application :
-elle n'embarque volontairement pas de gestion d'utilisateurs, car elle est pensée comme un
-outil interne.
-
----
-
-## 10. Tests et qualité
+## 9. Tests et qualité
 
 ```bash
 ./gradlew test
@@ -390,7 +360,7 @@ et réponse d'erreur 404 vérifiée.
 
 ---
 
-## 11. Documentation
+## 10. Documentation
 
 | Document | Contenu |
 |----------|---------|
@@ -412,7 +382,7 @@ python generate_presentation.py
 
 ---
 
-## 12. Déploiement
+## 11. Déploiement
 
 **JAR autonome**
 
@@ -434,9 +404,9 @@ uniquement au réseau interne ou au load balancer.
 
 ---
 
-## 13. Licence et crédits
+## 12. Licence et crédits
 
-Projet initié par **Alex Alkhatib** — refonte 2.0 : architecture, sécurité, interface, tests et
+**Alex Alkhatib** — architecture, sécurité, interface, tests et
 documentation.
 
 Distribué sous licence **MIT** — voir [LICENSE.md](LICENSE.md).
