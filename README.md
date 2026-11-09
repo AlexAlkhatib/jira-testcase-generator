@@ -29,7 +29,7 @@
 10. [Tests et qualité](#10-tests-et-qualité)
 11. [Documentation](#11-documentation)
 12. [Déploiement](#12-déploiement)
-13. [Licence et crédits](#14-licence-et-crédits)
+13. [Licence et crédits](#13-licence-et-crédits)
 
 ---
 
